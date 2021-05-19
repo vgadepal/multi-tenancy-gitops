@@ -20,7 +20,7 @@ find ${SCRIPTDIR}/.. -name '*.yaml' -print0 |
   while IFS= read -r -d '' File; do 
     if grep -q "kind: Application" "$File"; then
       echo "$File"
-      sed -i'.bak' -e "s#repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git#repoURL: ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}#" $File
+      sed -i'.bak' -e "s#repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git#repoURL: ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}#" $File
       sed -i'.bak' -e "s#targetRevision: master#targetRevision: ${GIT_BRANCH}#" $File
       rm "${File}.bak"
     fi
