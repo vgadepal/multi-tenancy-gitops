@@ -12,7 +12,7 @@ spec:
     server: https://kubernetes.default.svc
   project: applications
   source:
-    path: 1-apps/instances/namespace-ci/secrets
+    path: 1-apps/instances/namespace-ci/ace-app/config/ci/base
     repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
