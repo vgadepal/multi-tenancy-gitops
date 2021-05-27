@@ -19,6 +19,14 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'triggers.tekton.dev'
+    resources:
+      - eventlisteners
+      - triggerbindings
+      - triggertemplates
+  - verbs:
+      - '*'
+    apiGroups:
       - apps
     resources:
       - daemonsets
