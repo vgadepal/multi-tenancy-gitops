@@ -3,7 +3,7 @@ items:
 - apiVersion: tekton.dev/v1beta1
   kind: Task
   metadata:
-    name: deploy-config
+    name: create-config
   spec:
     params:
     - name: is-config-directory
@@ -126,20 +126,12 @@ items:
 
         echo -n ${configurations## } > $(results.configurations.path)
       workingDir: $(workspaces.workspace.path)
-    - image: quay.io/openshift/origin-cli:latest
-      name: apply-configuration
-      resources: {}
-      script: |
-        if [[ $(ls -A configurations) ]]; then
-          oc apply -f configurations
-        fi
-      workingDir: $(workspaces.workspace.path)
     workspaces:
     - name: workspace
 - apiVersion: tekton.dev/v1beta1
   kind: Task
   metadata:
-    name: deploy-is
+    name: create-is
   spec:
     params:
     - name: is-infra-directory
@@ -171,155 +163,8 @@ items:
           config=$configuration yq e -i '.spec.configurations = (.spec.configurations // []) + env(config)' $is_manifest_rendered
         done
       workingDir: $(workspaces.input.path)
-    - args:
-      - apply
-      - -f
-      - integration_server/IntegrationServer.yaml
-      command:
-      - oc
-      image: quay.io/openshift/origin-cli:latest
-      name: deploy-integration-server
-      resources: {}
-      workingDir: $(workspaces.input.path)
     workspaces:
     - name: input
-- apiVersion: tekton.dev/v1beta1
-  kind: Task
-  metadata:
-    name: functional-test
-  spec:
-    params:
-    - name: previous-is-genenration
-      type: string
-    - name: previous-deployment-revision
-      type: string
-    - name: release-name
-      type: string
-    - name: is-source-directory
-      type: string
-    - name: key-certs-secret-name
-      type: string
-    - name: client-key
-      type: string
-    - name: client-cert
-      type: string
-    - name: ca-cert
-      type: string
-    - name: endpoint-path
-      type: string
-    steps:
-    - env:
-      - name: RELEASE_NAME
-        value: $(params.release-name)
-      - name: PREVIOUS_IS_GENERATION
-        value: $(params.previous-is-genenration)
-      - name: PREVIOUS_DEPLOYMENT_REVISION
-        value: $(params.previous-deployment-revision)
-      image: quay.io/openshift/origin-cli:latest
-      name: wait-till-deployment
-      resources: {}
-      script: "set -e\n\nSLEEP_TIME_SEC=10\nRETRIES=20\n\nget_current_integration_server_generation()
-        {\n  oc get integrationserver $RELEASE_NAME -o jsonpath='{$.metadata.generation}'\n}\n\nintegration_spec_has_changed()
-        {\n  if [[ -z $PREVIOUS_IS_GENERATION ]]; then\n    return 1\n  fi\n\n  current_is_generation=$(get_current_integration_server_generation)\n
-        \ test $current_is_generation -gt $PREVIOUS_IS_GENERATION\n}\n\nwait_until()
-        {\n  condition=$1\n  message=$2\n\n  retries=$RETRIES\n  until $condition
-        || [[ \"$retries\" -eq 0 ]]; do\n    retries=$((retries - 1))\n\n    sleep
-        $SLEEP_TIME_SEC\n  done\n\n  if [[ \"$retries\" -eq 0 ]]; then\n    echo $message\n
-        \   exit 1\n  fi\n}\n\nget_current_deployment_revision() {\n  oc get deploy
-        -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].metadata.annotations.deployment\\.kubernetes\\.io/revision}'\n}\n\ndeployment_is_current()
-        {\n  current_deployment_revision=$(get_current_deployment_revision)\n\n  test
-        $current_deployment_revision -gt $PREVIOUS_DEPLOYMENT_REVISION\n}\n\nresolve_deployment()
-        {\n  deployment=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME
-        -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null) \n}\n\n\nreplicas_are_updated()
-        {\n  local replicas=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME
-        -o jsonpath='{$.items[0].status.replicas}')\n  test $replicas -eq 1\n}\n\ndesired_replicas_same_as_actual_replicas()
-        {\n  local desired_replicas=$1\n\n  test $desired_replicas -eq $(oc get pods
-        --no-headers -l app.kubernetes.io/instance=$RELEASE_NAME | wc -l)\n}\n\nif
-        integration_spec_has_changed; then\n  wait_until deployment_is_current \"Updated
-        deployment not resolved\"\nfi\n\nwait_until resolve_deployment \"Could not
-        find deployment\"\noc rollout status deployment $deployment\n\ndesired_replicas=$(oc
-        get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].spec.replicas}')\nwait_until
-        \"desired_replicas_same_as_actual_replicas $desired_replicas\" \"Numner of
-        pods does not match desired replicas\"\n"
-    - env:
-      - name: BASIC_AUTH_USERNAME
-        valueFrom:
-          secretKeyRef:
-            key: username
-            name: basic-auth-rest
-      - name: BASIC_AUTH_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: password
-            name: basic-auth-rest
-      image: quay.io/openshift/origin-cli:latest
-      name: resolve-route
-      resources: {}
-      script: "#!/bin/bash\n\nset -e\n\nSLEEP_TIME_SEC=10\nRETRIES=20\n\nwait_until()
-        {\n  condition=$1\n  message=$2\n\n  retries=$RETRIES\n  until $condition
-        || [[ \"$retries\" -eq 0 ]]; do\n    retries=$((retries - 1))\n\n    sleep
-        $SLEEP_TIME_SEC\n  done\n\n  if [[ \"$retries\" -eq 0 ]]; then\n    echo $message\n
-        \   exit 1\n  fi\n}\n\nurl_is_ready() {\n  url=$1\n  curl -s \\\n    -u $BASIC_AUTH_USERNAME:$BASIC_AUTH_PASSWORD
-        \\\n    --request OPTIONS \\\n    --cacert /client-certs/$(params.ca-cert)
-        \\\n    --cert /client-certs/$(params.client-cert) \\\n    --key /client-certs/$(params.client-key)
-        \\\n    https://$url 2>/dev/null\n}\n\nroute=$(oc get routes -l app.kubernetes.io/instance=$(params.release-name)
-        -o jsonpath='{.items[?(@.spec.port.targetPort==\"https\")].spec.host}') \necho
-        -n $route > /shared/route.txt\n\nwait_until \"url_is_ready $route/$(params.endpoint-path)\"
-        \"Route is not set up\"\n"
-      volumeMounts:
-      - mountPath: /shared
-        name: shared-volume
-      - mountPath: /client-certs
-        name: certs
-        readOnly: true
-    - env:
-      - name: BASIC_AUTH_USERNAME
-        valueFrom:
-          secretKeyRef:
-            key: username
-            name: basic-auth-rest
-      - name: BASIC_AUTH_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: password
-            name: basic-auth-rest
-      image: image-registry.openshift-image-registry.svc:5000/$(context.taskRun.namespace)/newman
-      imagePullPolicy: Always
-      name: run-test
-      resources: {}
-      script: |
-        #!/bin/bash
-
-        set -ex
-
-        route=$(cat /shared/route.txt)
-
-        test_file=$(workspaces.workspace.path)/$(params.is-source-directory)/test/newman/test.json
-        if [[ -e $test_file ]]; then
-          newman run \
-            --ssl-extra-ca-certs /client-certs/$(params.ca-cert) \
-            --ssl-client-key /client-certs/$(params.client-key) \
-            --ssl-client-cert /client-certs/$(params.client-cert) \
-            --env-var username=$BASIC_AUTH_USERNAME \
-            --env-var password=$BASIC_AUTH_PASSWORD \
-            --env-var host=$route \
-            $test_file
-
-        fi
-      volumeMounts:
-      - mountPath: /shared
-        name: shared-volume
-      - mountPath: /client-certs
-        name: certs
-        readOnly: true
-    volumes:
-    - emptyDir: {}
-      name: shared-volume
-    - name: certs
-      secret:
-        secretName: $(params.key-certs-secret-name)
-    workspaces:
-    - name: workspace
 - apiVersion: tekton.dev/v1beta1
   kind: Task
   metadata:
