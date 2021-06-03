@@ -2,8 +2,10 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: ace-bar
+
 spec:
   params:
+  
   - name: is-source-repo-url
     type: string
   - default: is-source
@@ -11,6 +13,7 @@ spec:
     type: string
   - name: is-source-repo-private-key
     type: string
+  
   - name: is-infra-repo-url
     type: string
   - default: is-infra
@@ -18,17 +21,13 @@ spec:
     type: string
   - name: is-infra-repo-private-key
     type: string
-  - name: is-config-repo-url
-    type: string
-  - default: is-config
-    name: is-config-directory
-    type: string
-  - name: is-config-repo-private-key
-    type: string
+
   - default: Dockerfile
     name: dockerfile-relative-path-to-infra
     type: string
+  
   tasks:
+  
   - name: clone-is-source
     params:
     - name: url
@@ -45,6 +44,7 @@ spec:
     workspaces:
     - name: output
       workspace: shared-workspace
+  
   - name: clone-is-infra
     params:
     - name: url
@@ -61,6 +61,7 @@ spec:
     workspaces:
     - name: output
       workspace: shared-workspace
+  
   - name: resolve-props
     params:
     - name: is-source-directory
@@ -73,6 +74,7 @@ spec:
     workspaces:
     - name: input
       workspace: shared-workspace
+  
   - name: generate-bar
     params:
     - name: is-source-directory
@@ -124,11 +126,12 @@ spec:
       - name: release-name
         value: $(tasks.resolve-props.results.release-name)
       - name: configurations
-        value: TODO
+        value: $(tasks.resolve-props.results.configurations)
     runAfter:
       - build-is-image
     workspaces:
       - name: input
         workspace: shared-workspace
+  
   workspaces:
   - name: shared-workspace
