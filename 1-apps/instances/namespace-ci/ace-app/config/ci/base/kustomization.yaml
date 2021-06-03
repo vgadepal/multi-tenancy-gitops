@@ -1,6 +1,8 @@
 resources:
 - configmap/gitops.yaml
-- pipelines/ace-bar-pipeline.yaml
+- pipelines/cntk-ace-bar-pipeline.yaml
+- eaglebank-ace-bar-pipeline.yaml
+- eaglebank-ace-config-pipeline.yaml
 - tasks/0-setup.yaml
 - tasks/2-build-tag-push-ace-bar.yaml
 - tasks/4-deploy.yaml
@@ -14,3 +16,4 @@ resources:
 - templates/cntk-ace-template.yaml
 - eventlisteners/cntk-event-listener.yaml
 - routes/cntk-webhook-event-listener.yaml
+- eaglebank-ace-tasks.yaml
