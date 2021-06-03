@@ -143,7 +143,7 @@ items:
     - name: configurations
       type: string
     steps:
-    - image: image-registry.openshift-image-registry.svc:5000/$(context.taskRun.namespace)/yq-zip
+    - image: image-registry.openshift-image-registry.svc:5000/ace/yq-zip
       name: setup-custom-resource
       resources: {}
       script: |
