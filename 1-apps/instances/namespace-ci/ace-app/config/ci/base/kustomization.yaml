@@ -1,4 +1,5 @@
 resources:
+- configmap/gitops.yaml
 - pipelines/eaglebank-ace-bar-pipeline.yaml
 - pipelines/eaglebank-ace-config-pipeline.yaml
 - tasks/0-setup.yaml
