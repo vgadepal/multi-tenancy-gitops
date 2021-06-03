@@ -17,4 +17,6 @@ resources:
 - templates/cntk-ace-template.yaml
 - eventlisteners/cntk-event-listener.yaml
 - routes/cntk-webhook-event-listener.yaml
+- pvc/ace-bar-pvc.yaml
+- pvc/ace-rest-ws-pvc.yaml
 
