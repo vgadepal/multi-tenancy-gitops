@@ -45,7 +45,7 @@ items:
         value: $(params.is-configuration-loopbackdatasource)
       - name: WORKSPACE_PATH
         value: $(workspaces.workspace.path)
-      image: image-registry.openshift-image-registry.svc:5000/ci/yq-zip
+      image: image-registry.openshift-image-registry.svc:5000/ace/yq-zip
       name: setup-configuration
       resources: {}
       script: |
@@ -364,7 +364,7 @@ items:
     - description: ""
       name: endpoint-path
     steps:
-    - image: image-registry.openshift-image-registry.svc:5000/ci/yq-zip
+    - image: image-registry.openshift-image-registry.svc:5000/ace/yq-zip
       name: parse-source-properties
       resources: {}
       script: |
