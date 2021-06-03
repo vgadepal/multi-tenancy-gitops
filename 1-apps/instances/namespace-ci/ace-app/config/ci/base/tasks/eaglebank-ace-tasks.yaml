@@ -180,7 +180,7 @@ items:
     - name: bar-filename
       type: string
     steps:
-    - image: image-registry.openshift-image-registry.svc:5000/$(context.taskRun.namespace)/mqsicreatebar
+    - image: image-registry.openshift-image-registry.svc:5000/ace/mqsicreatebar
       name: generate-bar
       resources: {}
       script: |
