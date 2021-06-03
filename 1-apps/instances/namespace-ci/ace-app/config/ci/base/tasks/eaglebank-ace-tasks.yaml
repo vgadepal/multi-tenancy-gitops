@@ -363,6 +363,7 @@ items:
       name: previous-deployment-revision
     - description: ""
       name: endpoint-path
+    - name: is-configurations
     steps:
     - image: image-registry.openshift-image-registry.svc:5000/ace/yq-zip
       name: parse-source-properties
@@ -395,13 +396,15 @@ items:
 
         resolve_props '.integrationServer.applicationNames' $(results.is-application-names.path)
         resolve_prop '.integrationServer.releaseName' $(results.release-name.path)
-        resolve_prop '.integrationServer.endpoint-path' $(results.endpoint-path.path)
+        
         resolve_props '.integrationServer.configurations.keystore' $(results.is-configuration-keystore.path)
         resolve_props '.integrationServer.configurations.truststore' $(results.is-configuration-truststore.path)
         resolve_props '.integrationServer.configurations.setdbparms' $(results.is-configuration-setdbparms.path)
         resolve_props '.integrationServer.configurations.serverconf' $(results.is-configuration-serverconf.path)
         resolve_props '.integrationServer.configurations.policyproject' $(results.is-configuration-policyproject.path)
         resolve_props '.integrationServer.configurations.loopbackdatasource' $(results.is-configuration-loopbackdatasource.path)
+
+        resolve_props '.integrationServer.configurations.*' $(results.is-configurations.path)
 
         resolve_prop '.mq.queueName' $(results.mq-queue-name.path)
         resolve_prop '.mq.endPointPolicyFile' $(results.mq-end-point-policy-file.path)
