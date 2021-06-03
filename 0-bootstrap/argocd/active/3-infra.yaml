@@ -7,6 +7,8 @@ spec:
   sourceRepos:
   - https://github.com/vgadepal/multi-tenancy-gitops.git
   destinations:
+  - namespace: ace
+    server: https://kubernetes.default.svc  
   - namespace: ci
     server: https://kubernetes.default.svc
   - namespace: dev
