@@ -1,0 +1,14 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: pipeline
+  namespace: ci
+secrets:
+  - name: pipeline-token-bzmlx
+  - name: pipeline-dockercfg-4fmbc
+  - name: eaglebank-ace-config
+  - name: eaglebank-ace-infra
+  - name: ibm-entitlement-key
+  - name: create-customer-rest-v1
+imagePullSecrets:
+  - name: pipeline-dockercfg-4fmbc
