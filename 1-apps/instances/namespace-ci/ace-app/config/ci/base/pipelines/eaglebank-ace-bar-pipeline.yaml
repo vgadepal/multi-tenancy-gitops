@@ -126,7 +126,7 @@ spec:
       - name: release-name
         value: $(tasks.resolve-props.results.release-name)
       - name: configurations
-        value: $(tasks.resolve-props.results.configurations)
+        value: $(tasks.resolve-props.results.is-configurations)
     runAfter:
       - build-is-image
     workspaces:
