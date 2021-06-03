@@ -15,4 +15,7 @@ spec:
     path: 1-apps/instances/namespace-ci/ace-app/config/ci/base
     repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
     targetRevision: master
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
