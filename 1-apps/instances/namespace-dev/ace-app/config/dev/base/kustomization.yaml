@@ -1,1 +1,2 @@
-resources: []
+resources: 
+- configuration/ibm_rest_serverconf_yaml.yaml
