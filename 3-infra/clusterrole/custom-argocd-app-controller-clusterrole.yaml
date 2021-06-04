@@ -180,3 +180,10 @@ rules:
       - storage.k8s.io
     resources:
       - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - appconnect.ibm.com
+    resources:
+      - integrationservers
+      - configurations
