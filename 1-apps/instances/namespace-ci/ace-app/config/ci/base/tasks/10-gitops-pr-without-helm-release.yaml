@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-gitops
+  name: ibm-gitops-with-pr-no-helm-release
   annotations:
     description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
@@ -19,6 +19,8 @@ spec:
       default: ""
     - name: app-type
       default: ""
+    - name: app-name
+      default: ""
     - name: source-dir
       default: /source
     - name: subdir
@@ -27,8 +29,6 @@ spec:
       default: ""
     - name: yaml
       default: "requirements.yaml"
-    - name: helm-url
-      default: ""
     - name: tools-image
       default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
   volumes:
@@ -39,9 +39,9 @@ spec:
       - name: source
         mountPath: $(params.source-dir)
   steps:
-    - name: gitops
+    - name: gitops-with-pr
       image: $(params.tools-image)
-      workingDir: $(params.source-dir)
+      workingdir: $(params.source-dir)
       env:
         - name: NAMESPACE
           valueFrom:
@@ -136,7 +136,6 @@ spec:
 
           YAML_FILE="$(params.yaml)"
           VERSION="$(params.version)"
-          HELM_URL="$(params.helm-url)"
 
           if [[ -z "${GIT_HOST}" ]] || [[ -z "${GIT_ORG}" ]] || [[ -z "${GIT_REPO}" ]]; then
               echo "GitOps repo has not been configured with confimap gitops-repo. Skipping trigger step"
@@ -170,13 +169,12 @@ spec:
           set -x
           cd gitops_cd
 
-
           if [[ -f "${SUBDIR}/${YAML_FILE}" ]]; then
             echo "Requirements before update"
             cat "${SUBDIR}/${YAML_FILE}"
 
             yq r "${SUBDIR}/${YAML_FILE}" -j | \
-              jq --arg APP_NAME "${APP_NAME}" --arg VERSION "${VERSION}" --arg REPO "${HELM_URL}" '.dependencies |= map((select(.name == $APP_NAME) | .version = $VERSION | .repository = $REPO) // .)' | \
+              jq --arg APP_NAME "${APP_NAME}" --arg VERSION "${VERSION}" '.dependencies |= map((select(.name == $APP_NAME) | .version = $VERSION) // .)' | \
               yq r --prettyPrint - > "${SUBDIR}/${YAML_FILE}.new"
 
             rm "${SUBDIR}/${YAML_FILE}"
@@ -184,35 +182,6 @@ spec:
 
             echo "Requirements after update"
             cat "${SUBDIR}/${YAML_FILE}"
-
-          elif [[ -n "${HELM_URL}" ]]; then
-            echo "Creating first time chart using ${SUBDIR}"
-            # create directory
-            mkdir -p "${SUBDIR}"
-
-            # WARNING: Do not indent the cat commands below
-
-          cat <<EOF >"${SUBDIR}/Chart.yaml"
-          apiVersion: v2
-          version: 0.1.0
-          name: ${APP_NAME}
-          description: Chart to configure ArgoCD with the ${APP_NAME} project and its applications
-          EOF
-
-          cat <<EOF >"${SUBDIR}/${YAML_FILE}"
-          dependencies:
-            - name: ${APP_NAME}
-              version: ${VERSION}
-              repository: >-
-                ${HELM_URL}
-          EOF
-
-          cat <<EOF >"${SUBDIR}/values.yaml"
-          global: {}
-          ${APP_NAME}:
-            replicaCount: 1
-          EOF
-
 
           else
             echo "GitOps repo configured but unable to update application config"
@@ -224,6 +193,15 @@ spec:
             exit 0
           fi
 
+          git checkout -b cntk-ci-pipeline-${APP_NAME}-${VERSION}
+
+          # push changes to git
           git add "${SUBDIR}/"
-          git commit -m "Updates ${APP_NAME} to ${VERSION}"
-          git push -v
+          git commit -m "Cloudnative toolkit pipeline updates ${APP_NAME} to ${VERSION}" --amend --no-edit --signoff
+          git remote rm origin
+
+          git remote add origin ${GIT_URL} > /dev/null 2>&1
+          git push origin cntk-ci-pipeline-${APP_NAME}-${VERSION}
+
+          GIT_PUSH_URL="${PROTOCOL}://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/pulls"
+          curl -u ${GIT_AUTH_USER}:${GIT_AUTH_PWD} -d '{"title":"PR to promote to '${GIT_BRANCH}' environment","base":"'${GIT_BRANCH}'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${APP_NAME}'-'${VERSION}'"}' ${GIT_PUSH_URL}
