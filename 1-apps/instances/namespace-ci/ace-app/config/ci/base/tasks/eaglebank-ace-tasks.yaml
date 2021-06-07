@@ -86,7 +86,7 @@ items:
 
           e=$contents yq e -i '.spec.contents = env(e)' $rendered_config_directory/$sanitised_file_name.yaml
 
-          echo $sanitised_config_name
+          echo $sanitised_file_name.yaml
         }
 
         process_configrations() {
