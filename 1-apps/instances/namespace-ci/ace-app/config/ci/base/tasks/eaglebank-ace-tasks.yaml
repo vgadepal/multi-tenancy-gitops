@@ -125,7 +125,7 @@ items:
 
         configurations=""
 
-        for config_type in IS_CONFIGURATION_SERVERCONF \
+        for config_type in IS_CONFIGURATION_SERVERCONF IS_CONFIGURATION_SETDBPARMS \
                       IS_CONFIGURATION_POLICYPROJECT IS_CONFIGURATION_LOOPBACKDATASOURCE; do
 
           configurations="${configurations} $(process_configrations $config_type)"
