@@ -148,7 +148,7 @@ spec:
     runAfter:
     - create-config
     workspaces:
-    - name: workspace
+    - name: shared-workspace
       workspace: shared-workspace
   
   workspaces:
