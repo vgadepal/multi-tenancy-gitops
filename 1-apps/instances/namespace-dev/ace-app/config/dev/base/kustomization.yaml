@@ -6,3 +6,4 @@ resources:
   - tasks/13-extract.yaml
   - configuration/ibm_rest_serverconf_yaml.yaml
   - configuration/ibm_rest_policy.yaml
+  - configuration/ibm_rest_dbparms_txt.yaml
