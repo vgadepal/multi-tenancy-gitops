@@ -1,0 +1,96 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-ops-saad
+spec:
+  params:
+    - name: url
+      description: git url to clone
+      type: string
+    - name: revision
+      description: git revision to checkout (branch, tag, sha, ref…)
+      type: string
+      default: ""
+    - name: sslVerify
+      description: defines if http.sslVerify should be set to true or false in the global git config
+      type: string
+      default: "true"
+    - name: submodules
+      description: defines if the resource should initialize and fetch the submodules
+      type: string
+      default: "true"
+    - name: depth
+      description: performs a shallow clone where only the most recent commit(s) will be fetched
+      type: string
+      default: "1"
+    - name: gitInitImage
+      description: the image used where the git-init binary is
+      type: string
+      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.18.0"
+    - name: sshPrivateKey
+      description: the private key to use
+      type: string
+      default: ""
+    - name: kustomization-path
+  steps:
+    - name: git-clone
+      image: $(params.gitInitImage)
+      volumeMounts:
+        - name: local-workspace
+          mountPath: /local-workspace
+      script: |
+        #!/bin/sh
+        set -eu -o pipefail
+
+        if [[ "$(params.sshPrivateKey)" != "" ]] ; then
+          eval `ssh-agent`
+          ssh-add ~/.ssh/$(params.sshPrivateKey)
+        fi
+
+        CHECKOUT_DIR="/local-workspace/git-workspace"
+
+        mkdir -p ${CHECKOUT_DIR}
+
+        /ko-app/git-init \
+          -url "$(params.url)" \
+          -revision "$(params.revision)" \
+          -path "$CHECKOUT_DIR" \
+          -sslVerify="$(params.sslVerify)" \
+          -submodules="$(params.submodules)" \
+          -depth "$(params.depth)"
+
+        cd "$CHECKOUT_DIR"
+        git rev-parse HEAD
+        EXIT_CODE="$?"
+        if [ "$EXIT_CODE" != 0 ] ; then
+          exit $EXIT_CODE
+        fi
+
+    - name: copy-files
+      volumeMounts:
+        - name: local-workspace
+          mountPath: /local-workspace
+      image: busybox
+      script: |
+        DESTINATION_DIRECTORY=/local-workspace/1-apps/instances/namespace-dev/ace-app/config/dev/base/configuration
+        # SOURCE_DIRECTORY=$(workspaces.workspace.path)/configurations
+
+        ls -R ${DESTINATION_DIRECTORY}
+
+
+    # - name: update-kustomization
+    #   volumeMounts:
+    #     - name: git-workspace
+    #       mountPath: /git-workspace
+    #   image: mikefarah/yq:4.9.3
+    #   args:
+    #     - items
+    #     - /git-workspace/$(params.kustomization-path)
+    #   script: |
+    #       ""
+    # - name: git-push
+  volumes:
+    - name: local-workspace
+      emptyDir: {}
+  workspaces:
+    - name: shared-workspace
