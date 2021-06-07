@@ -4,3 +4,5 @@ resources:
   - tasks/11-update-image.yaml
   - tasks/12-argo-tests.yaml
   - tasks/13-extract.yaml
+  - configuration/ibm_rest_serverconf_yaml.yaml
+  - configuration/ibm_rest_policy.yaml
