@@ -11,6 +11,7 @@ resources:
 - tasks/9-helm-release.yaml
 - tasks/9-img-scan.yaml
 - tasks/10-gitops.yaml
+- tasks/gitops.yaml
 - tasks/eaglebank-ace-tasks.yaml
 - bindings/cntk-binding.yaml
 - templates/cntk-ace-template.yaml
