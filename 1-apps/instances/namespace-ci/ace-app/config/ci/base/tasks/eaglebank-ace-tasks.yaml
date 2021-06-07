@@ -92,23 +92,18 @@ items:
         process_configrations() {
           local config_type=$1
 
-          local configurations=""
           for config in ${!config_type}; do
-            if [[ $config_type == IS_CONFIGURATION_KEYSTORE ||  $config_type == IS_CONFIGURATION_TRUSTSTORE || $config_type == IS_CONFIGURATION_SETDBPARMS ]]; then
-              configurations="${configurations} $config"
+            local config_pattern='^IS_CONFIGURATION_(.+)'
+            if [[ $config_type =~ $config_pattern ]]; then
+              local type=$(echo "${BASH_REMATCH[1]}" | sed -e 's/\(.*\)/\L\1/')
             else
-              local config_pattern='^IS_CONFIGURATION_(.+)'
-              if [[ $config_type =~ $config_pattern ]]; then
-                local type=$(echo "${BASH_REMATCH[1]}" | sed -e 's/\(.*\)/\L\1/')
-              else
-                echo "unknown config type parameter: $config_type"
-                exit 1
-              fi
-
-              create_configurations $type $config
+              echo "unknown config type parameter: $config_type"
+              exit 1
             fi
+
+            create_configurations $type $config
+
           done
-          echo -n ${configurations## }
         }
 
         rm -rf $rendered_config_directory
@@ -116,8 +111,7 @@ items:
 
         configurations=""
 
-        for config_type in IS_CONFIGURATION_KEYSTORE IS_CONFIGURATION_TRUSTSTORE \
-                      IS_CONFIGURATION_SETDBPARMS IS_CONFIGURATION_SERVERCONF \
+        for config_type in IS_CONFIGURATION_SERVERCONF \
                       IS_CONFIGURATION_POLICYPROJECT IS_CONFIGURATION_LOOPBACKDATASOURCE; do
 
           configurations="${configurations} $(process_configrations $config_type)"
