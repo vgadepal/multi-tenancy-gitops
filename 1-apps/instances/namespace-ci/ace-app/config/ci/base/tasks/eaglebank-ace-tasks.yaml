@@ -94,7 +94,7 @@ items:
 
           local configurations=""
           for config in ${!config_type}; do
-            if [[ $config_type == IS_CONFIGURATION_KEYSTORE ||  $config_type == IS_CONFIGURATION_TRUSTSTORE || IS_CONFIGURATION_SETDBPARMS ]]; then
+            if [[ $config_type == IS_CONFIGURATION_KEYSTORE ||  $config_type == IS_CONFIGURATION_TRUSTSTORE || $config_type == IS_CONFIGURATION_SETDBPARMS ]]; then
               configurations="${configurations} $config"
             else
               local config_pattern='^IS_CONFIGURATION_(.+)'
