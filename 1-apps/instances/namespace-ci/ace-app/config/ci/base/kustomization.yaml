@@ -23,4 +23,4 @@ resources:
 - routes/cntk-webhook-event-listener.yaml
 - pvc/ace-bar-pvc.yaml
 - pvc/ace-rest-ws-pvc.yaml
-
+- pvc/ace-bar-pipeline-pvc.yaml
