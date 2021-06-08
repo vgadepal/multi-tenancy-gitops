@@ -10,7 +10,7 @@ spec:
   destination:
     namespace: instana-agent
     server: 'https://kubernetes.default.svc'
-  project: infra
+  project: services
   source:
     path: 2-services/instances/instana-agent
     repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
