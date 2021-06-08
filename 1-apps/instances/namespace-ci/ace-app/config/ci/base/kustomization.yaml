@@ -2,8 +2,8 @@ resources:
 - configmap/gitops.yaml
 - pipelines/eaglebank-ace-bar-pipeline.yaml
 - pipelines/eaglebank-ace-config-pipeline.yaml
-- pipelines/ibm-test-pipeline-for-dev.yaml
-- pipelines/ibm-test-pipeline-for-staging.yaml
+#- pipelines/ibm-test-pipeline-for-dev.yaml
+#- pipelines/ibm-test-pipeline-for-staging.yaml
 - tasks/0-setup.yaml
 - tasks/2-build-tag-push-ace-bar.yaml
 - tasks/4-deploy.yaml
