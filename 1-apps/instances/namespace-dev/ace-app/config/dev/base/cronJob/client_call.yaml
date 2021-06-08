@@ -1,0 +1,44 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: client-call
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello
+              image: alpine/httpie
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - "http --pretty=format	-j --ignore-stdin -a $USERNAME:$PASSWORD --cert /certs/ibm-client.crt --cert-key /certs/ibm-client.key --verify /certs/ibm-ca.crt https://create-customer-details-rest-https-dev.ace-prod-ref-6ccd7f378ae819553d37d5f2ee142bd6-0000.us-east.containers.appdomain.cloud/createcustomerrestcallingws/v1/createcustomer @/request/request.json" 
+              env:
+                - name: USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: basic-auth-rest
+                      key: username
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: basic-auth-rest
+                      key: password
+              volumeMounts:
+                - name: ibm-client-key-certs
+                  mountPath: "/certs"
+                  readOnly: true
+                - name: client-request
+                  mountPath: "/request"
+                  readOnly: true
+          volumes:
+            - name: ibm-client-key-certs
+              secret:
+                secretName: ibm-client-key-certs
+            - name: client-request
+              configMap:
+                name: client-request
+          restartPolicy: OnFailure
