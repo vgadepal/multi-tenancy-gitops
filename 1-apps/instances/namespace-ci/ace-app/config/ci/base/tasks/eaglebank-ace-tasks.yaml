@@ -65,7 +65,7 @@ items:
           local sanitised_config_name=$(echo $config | sed 's/^[[:upper:]]/\L&/;s/_/-/g;s/[[:upper:]]/\L-&/g')
 
           case $type in
-          setdbparms keystore truststore)
+          setdbparms | keystore | truststore)
             cp $config_template_path/configuration-with-secret.yaml $rendered_config_directory/$sanitised_file_name.yaml
 
             e=$sanitised_config_name yq e -i '.spec.secretName = env(e)' $rendered_config_directory/$sanitised_file_name.yaml
