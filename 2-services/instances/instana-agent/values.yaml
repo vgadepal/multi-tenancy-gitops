@@ -119,7 +119,8 @@ instana-agent:
       autoMountConfigEntries: false
 
     configuration_yaml: |
-
+      com.instana.plugin.mongodb:
+        enabled: false
       com.instana.plugin.ace:
         enabled: true
         poll_rate: 20
