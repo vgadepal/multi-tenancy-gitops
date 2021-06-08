@@ -124,9 +124,12 @@ instana-agent:
         enabled: true
         poll_rate: 20
         NodesOrServers: # Multiple Integration node instances or multiple standalone Integration Servers can be specified
-          ISdev:  # specify the Integration node name (required)
+          create-customer-details-rest:  # specify the Integration node name (required)
                 # Following parameters used to acess ACE server's rest api service to retrieve such as status data, configuration data etc
             restApiPort: '7600'           # ACE server's rest api port (required)     
+
+      org.ops4j.pax.logging.cfg: 
+        log4j2.logger.instana.level: 'DEBUG'
 
     # agent.redactKubernetesSecrets sets the INSTANA_KUBERNETES_REDACT_SECRETS environment variable.
     # redactKubernetesSecrets: null
