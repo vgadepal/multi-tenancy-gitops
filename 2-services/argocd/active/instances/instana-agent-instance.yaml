@@ -12,7 +12,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: infra
   source:
-    path: 3-infra/instances/instana-agent
+    path: 2-services/instances/instana-agent
     repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
