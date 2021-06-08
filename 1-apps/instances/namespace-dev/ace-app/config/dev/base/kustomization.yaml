@@ -6,4 +6,4 @@ resources:
   - configuration/ibm_rest_policy.yaml
   - integrationServer/IntegrationServer.yaml
   - aceDashboard/ace-dashboard.yaml
-  
+  - configmap/clientRequest.yaml
