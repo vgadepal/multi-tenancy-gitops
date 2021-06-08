@@ -186,4 +186,5 @@ rules:
       - appconnect.ibm.com
     resources:
       - integrationservers
+      - dashboards
       - configurations
