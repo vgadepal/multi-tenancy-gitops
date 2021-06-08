@@ -19,7 +19,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-5-0
+        name: ibm-setup
       params:
         - name: git-url
           value: $(params.git-url)

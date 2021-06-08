@@ -1,7 +1,2 @@
 resources: 
 - configuration/ibm_rest_serverconf_yaml.yaml
-- pipelines/ibm-test-pipeline-for-staging.yaml
-- tasks/0-setup.yaml
-- tasks/11-update-image.yaml
-- tasks/12-argo-tests.yaml
-- tasks/13-extract.yaml
