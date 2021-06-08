@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-instana-agent
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+spec:
+  destination:
+    namespace: instana-agent
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: 3-infra/namespaces/instana-agent
+    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
