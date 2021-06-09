@@ -11,7 +11,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: ace-config-$(tt.params.source-repo-name)-$(uid)
+        name: ace-config-$(uid)
       spec:
         params:
           - name: is-source-repo-url
