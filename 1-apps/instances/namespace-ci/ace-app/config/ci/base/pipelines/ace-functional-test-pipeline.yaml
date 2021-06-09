@@ -13,24 +13,7 @@ spec:
   - default: id_create-customer-rest-v1
     name: is-source-repo-private-key
     type: string
-  - default: git@github.ibm.com:cpat-int-samples/eaglebank-ace-infra.git
-    name: is-infra-repo-url
-    type: string
-  - default: is-infra
-    name: is-infra-directory
-    type: string
-  - default: id_eaglebank-ace-infra
-    name: is-infra-repo-private-key
-    type: string
-  - default: git@github.ibm.com:cpat-int-samples/eaglebank-ace-config.git
-    name: is-config-repo-url
-    type: string
-  - default: is-config
-    name: is-config-directory
-    type: string
-  - default: id_eaglebank-ace-config
-    name: is-config-repo-private-key
-    type: string
+
   - default: ibm-client-key-certs
     name: key-certs-secret-name
     type: string
@@ -49,7 +32,9 @@ spec:
   - description: Points to the staging/prod env
     name: destination-env
     type: string
+
   tasks:
+  
   - name: clone-is-source
     params:
     - name: url
@@ -66,38 +51,7 @@ spec:
     workspaces:
     - name: output
       workspace: shared-workspace
-  - name: clone-is-infra
-    params:
-    - name: url
-      value: $(params.is-infra-repo-url)
-    - name: subdirectory
-      value: $(params.is-infra-directory)
-    - name: deleteExisting
-      value: "true"
-    - name: sshPrivateKey
-      value: $(params.is-infra-repo-private-key)
-    taskRef:
-      kind: Task
-      name: git-clone
-    workspaces:
-    - name: output
-      workspace: shared-workspace
-  - name: clone-is-config
-    params:
-    - name: url
-      value: $(params.is-config-repo-url)
-    - name: subdirectory
-      value: $(params.is-config-directory)
-    - name: deleteExisting
-      value: "true"
-    - name: sshPrivateKey
-      value: $(params.is-config-repo-private-key)
-    taskRef:
-      kind: Task
-      name: git-clone
-    workspaces:
-    - name: output
-      workspace: shared-workspace
+  
   - name: resolve-props
     params:
     - name: is-source-directory
@@ -110,6 +64,7 @@ spec:
     workspaces:
     - name: input
       workspace: shared-workspace
+  
   - name: functional-test
     params:
     - name: is-source-directory
@@ -138,6 +93,7 @@ spec:
     workspaces:
     - name: workspace
       workspace: shared-workspace
+  
   - name: gitops-for-ace
     params:
     - name: source-env
