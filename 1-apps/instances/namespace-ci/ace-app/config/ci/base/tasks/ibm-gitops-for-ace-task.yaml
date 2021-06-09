@@ -166,14 +166,14 @@ spec:
         rm ${destination_directory_integration_server}/*.yaml
       fi
 
-      cp -r ${source_directory_integration_server} ${destination_directory_integration_server}
+      cp -r ${source_directory_integration_server}/. ${destination_directory_integration_server}
 
       if [ "$(ls -A ${destination_directory_config}/*.yaml)" ]; then
         shopt -s extglob
         rm ${destination_directory_config}/*.yaml
       fi
 
-      cp -r ${source_directory_config} ${destination_directory_config}
+      cp -r ${source_directory_config}/. ${destination_directory_config}
 
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
         echo "No changes"
