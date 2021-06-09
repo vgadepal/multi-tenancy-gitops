@@ -5,9 +5,9 @@ metadata:
 data:
   branch: master
   host: github.com
-  org: phemankita
-  owner: phemankita
+  org: vgadepal
+  owner: vgadepal
   parentdir: .
   protocol: https
   repo: multi-tenancy-gitops
-  url: https://github.com/phemankita/multi-tenancy-gitops.git
+  url: https://github.com/vgadepal/multi-tenancy-gitops.git
