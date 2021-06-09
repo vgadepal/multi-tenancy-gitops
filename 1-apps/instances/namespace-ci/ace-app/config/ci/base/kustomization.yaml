@@ -24,3 +24,7 @@ resources:
 - pvc/ace-bar-pvc.yaml
 - pvc/ace-rest-ws-pvc.yaml
 - pvc/ace-bar-pipeline-pvc.yaml
+- bindings/eaglebank-ace-config-trigger-binding.yaml
+- eventlisteners/eaglebank-ace-config-event-listener.yaml
+- routes/eaglebank-ace-config-webhook-event-listener.yaml
+- templates/eaglebank-ace-config-trigger-template.yaml
