@@ -29,3 +29,11 @@ resources:
 - pvc/ace-rest-ws-pvc.yaml
 - pvc/ace-bar-pipeline-pvc.yaml
 - pvc/ace-test-pvc.yaml
+- bindings/eaglebank-ace-config-trigger-binding.yaml
+- eventlisteners/eaglebank-ace-config-event-listener.yaml
+- routes/eaglebank-ace-config-webhook-event-listener.yaml
+- templates/eaglebank-ace-config-trigger-template.yaml
+- bindings/eaglebank-ace-bar-trigger-binding.yaml
+- eventlisteners/eaglebank-ace-bar-event-listeneryaml
+- routes/eaglebank-ace-bar-webhook-event-listener.yaml
+- templates/eaglebank-ace-bar-trigger-template.yaml
