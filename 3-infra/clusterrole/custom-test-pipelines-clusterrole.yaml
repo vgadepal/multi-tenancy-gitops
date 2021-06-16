@@ -1,0 +1,15 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: custom-test-pipelines
+rules:
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'tekton.dev'
+    resources:
+      - pipelines
+      - pipelineruns
+      - tasks
+      - taskruns
+  
