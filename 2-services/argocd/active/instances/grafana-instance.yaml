@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "300"
+  labels:
+    gitops.tier.group: cntk      
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: 2-services/instances/grafana
+    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
