@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: after
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+spec:
+  template:
+    spec:
+      containers:
+      - name: functional-test
+        image: quay.io/rhcanada/tkn-cli
+        command: 
+          - tkn
+        args: 
+          - -n
+          - ci 
+          - pipeline 
+          - list
+      restartPolicy: Never
+  backoffLimit: 0
