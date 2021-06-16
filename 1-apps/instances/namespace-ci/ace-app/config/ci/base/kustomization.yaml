@@ -37,3 +37,4 @@ resources:
 - eventlisteners/eaglebank-ace-bar-event-listeneryaml
 - routes/eaglebank-ace-bar-webhook-event-listener.yaml
 - templates/eaglebank-ace-bar-trigger-template.yaml
+- hooks/post-sync.yaml
