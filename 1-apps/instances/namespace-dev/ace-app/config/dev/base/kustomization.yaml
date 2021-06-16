@@ -8,3 +8,4 @@ resources:
   - configuration/ibm_ca_jks.yaml
   - configuration/ibm_rest_policy.yaml
   - integrationServer/IntegrationServer.yaml
+  - hooks/post-sync.yaml
