@@ -10,6 +10,34 @@ spec:
       containers:
       - name: functional-test
         image: quay.io/rhcanada/tkn-cli
-        command: ["tkn", "--help"]
+        command: "tkn"
+        args: 
+          - -n 
+          - ci 
+          - pipeline 
+          - start 
+          - ace-functional-test
+          - --param
+          - is-source-repo-url=git@github.ibm.com:cpat-int-samples/createCustomer_REST_V1.git
+          - --param 
+          - is-source-directory=is-source
+          - --param
+          - is-source-repo-private-key=id_create-customer-rest-v1
+          - --param
+          - key-certs-secret-name=ibm-client-key-certs
+          - --param 
+          - client-key=ibm-client.key
+          - --param
+          - client-cert=ibm-client.crt
+          - --param
+          - ca-cert=ibm-ca.crt
+          - --param
+          - source-env=dev
+          - --param
+          - destination-env=staging
+          - --workspace
+          - name=shared-workspace,claimName=ace-test-pvc
+          - --serviceaccount
+          - pipeline
       restartPolicy: Never
   backoffLimit: 0
