@@ -67,6 +67,14 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'integreatly.org'
+    resources:
+      - grafanas
+      - grafanadatasources
+      - grafanadashboards
+  - verbs:
+      - '*'
+    apiGroups:
       - 'networking.k8s.io'
     resources:
       - networkpolicies
