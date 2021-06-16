@@ -8,8 +8,8 @@ spec:
   template:
     spec:
       containers:
-      - name: sleep
-        image: alpine:latest
-        command: ["sh", "-c", "echo time is $(date)"]
+      - name: functional-test
+        image: quay.io/rhcanada/tkn-cli
+        command: ["tkn", "--help"]
       restartPolicy: Never
   backoffLimit: 0
