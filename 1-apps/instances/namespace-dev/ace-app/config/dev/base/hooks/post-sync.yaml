@@ -10,7 +10,8 @@ spec:
       containers:
       - name: functional-test
         image: quay.io/rhcanada/tkn-cli
-        command: "tkn"
+        command: 
+          - tkn
         args: 
           - -n 
           - ci 
