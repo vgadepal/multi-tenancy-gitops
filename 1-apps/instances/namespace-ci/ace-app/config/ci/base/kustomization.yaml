@@ -21,6 +21,7 @@ resources:
 - tasks/eaglebank-ace-tasks.yaml
 - tasks/functional-test-task.yaml
 - tasks/ibm-gitops-for-ace-task.yaml
+- tasks/ibm-jmeter-performance-test.yaml
 - bindings/cntk-binding.yaml
 - templates/cntk-ace-template.yaml
 - eventlisteners/cntk-event-listener.yaml
