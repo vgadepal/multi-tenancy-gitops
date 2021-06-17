@@ -18,10 +18,10 @@ spec:
       default: /source
     - name: test-plan
       default: jmeter_test_plan/createCustomer_ace_testplan.jmx
-    - name: jmeter-users
-      default: "5"
-    - name: jmeter-loop-count
-      default: "25"
+    # - name: jmeter-users
+    #   default: "5"
+    # - name: jmeter-loop-count
+    #   default: "25"
   volumes:
     - name: source
       emptyDir: {}
