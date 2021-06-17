@@ -19,6 +19,7 @@ spec:
     type: string
   - name: endpoint-path
     type: string
+  - name: source-env
   steps:
   - name: wait-till-deployment
     image: quay.io/openshift/origin-cli:latest
@@ -49,24 +50,24 @@ spec:
       }
 
       resolve_deployment() {
-        deployment=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null) 
+        deployment=$(oc -n $(params.source-env) get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null) 
       }
 
       replicas_are_updated() {
-        local replicas=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].status.replicas}')
+        local replicas=$(oc -n $(params.source-env) get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].status.replicas}')
         test $replicas -eq 1
       }
 
       desired_replicas_same_as_actual_replicas() {
         local desired_replicas=$1
 
-        test $desired_replicas -eq $(oc get pods --no-headers -l app.kubernetes.io/instance=$RELEASE_NAME | wc -l)
+        test $desired_replicas -eq $(oc -n $(params.source-env) get pods --no-headers -l app.kubernetes.io/instance=$RELEASE_NAME | wc -l)
       }
 
       wait_until resolve_deployment "Could not find deployment"
-      oc rollout status deployment $deployment
+      oc -n $(params.source-env) rollout status deployment $deployment
 
-      desired_replicas=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].spec.replicas}')
+      desired_replicas=$(oc -n $(params.source-env) get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].spec.replicas}')
       wait_until "desired_replicas_same_as_actual_replicas $desired_replicas" "Numner of pods does not match desired replicas"
   - name: resolve-route
     env:
@@ -117,7 +118,7 @@ spec:
           https://$url 2>/dev/null
       }
 
-      route=$(oc get routes -l app.kubernetes.io/instance=$(params.release-name) -n dev -o jsonpath='{.items[?(@.spec.port.targetPort=="https")].spec.host}')
+      route=$(oc -n $(params.source-env) get routes -l app.kubernetes.io/instance=$(params.release-name) -o jsonpath='{.items[?(@.spec.port.targetPort=="https")].spec.host}')
       echo -n $route > /shared/route.txt
 
       wait_until "url_is_ready $route/$(params.endpoint-path)" "Route is not set up"

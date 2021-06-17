@@ -67,6 +67,8 @@ spec:
   
   - name: functional-test
     params:
+    - name: source-env
+      value: $(params.source-env)
     - name: is-source-directory
       value: $(params.is-source-directory)
     - name: release-name
