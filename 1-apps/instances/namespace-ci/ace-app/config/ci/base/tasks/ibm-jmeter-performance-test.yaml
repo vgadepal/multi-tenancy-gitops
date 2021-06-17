@@ -18,10 +18,10 @@ spec:
       default: /source
     - name: test-plan
       default: jmeter_test_plan/createCustomer_ace_testplan.jmx
-    # - name: jmeter-users
-    #   default: "5"
-    # - name: jmeter-loop-count
-    #   default: "25"
+    - name: jmeter-users
+      default: "5"
+    - name: jmeter-loop-count
+      default: "25"
   volumes:
     - name: source
       emptyDir: {}
@@ -63,13 +63,11 @@ spec:
         set -xv
         ls $(params.source-dir)/$(params.test-plan)
         # note: the export does not like the - sign
-        # echo "export jmeter_users=$(echo $(params.jmeter-users))" > /tmp/jmeter.env
-        # echo "export jmeter_loop_count=$(echo $(params.jmeter-loop-count))" >> /tmp/jmeter.env
-        # source /tmp/jmeter.env
+        echo "export jmeter_users=$(echo $(params.jmeter-users))" > /tmp/jmeter.env
+        echo "export jmeter_loop_count=$(echo $(params.jmeter-loop-count))" >> /tmp/jmeter.env
+        source /tmp/jmeter.env
         ls -lrt /opt/jmeter
-        #/opt/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -t $(params.source-dir)/$(params.test-plan) -Jjmeter_users=$jmeter_users -Jjmeter_loop_count=$jmeter_loop_count -l /tmp/report.jtl
-
-        /opt/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -t $(params.source-dir)/$(params.test-plan) -l /tmp/report.jtl
+        /opt/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -t $(params.source-dir)/$(params.test-plan) -Jjmeter_users=$jmeter_users -Jjmeter_loop_count=$jmeter_loop_count -l /tmp/report.jtl
         echo "checking for the existance of errors .."
 
         LINES=$(grep false /tmp/report.jtl | wc -l)
