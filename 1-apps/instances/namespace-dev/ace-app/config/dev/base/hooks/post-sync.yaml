@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: after
+  name: trigger-functional-test
   annotations:
     argocd.argoproj.io/hook: PostSync
 spec:
