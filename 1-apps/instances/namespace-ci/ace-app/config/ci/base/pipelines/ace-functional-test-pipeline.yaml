@@ -73,10 +73,6 @@ spec:
       value: create-customer-details-rest
     - name: endpoint-path
       value: v1/createcustomer
-    - name: previous-is-genenration
-      value: $(tasks.resolve-props.results.previous-is-genenration)
-    - name: previous-deployment-revision
-      value: $(tasks.resolve-props.results.previous-deployment-revision)
     - name: key-certs-secret-name
       value: $(params.key-certs-secret-name)
     - name: client-key
