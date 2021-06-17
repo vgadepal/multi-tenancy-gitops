@@ -5,10 +5,6 @@ metadata:
   name: functional-test
 spec:
   params:
-  - name: previous-is-genenration
-    type: string
-  - name: previous-deployment-revision
-    type: string
   - name: release-name
     type: string
   - name: is-source-directory
@@ -24,7 +20,56 @@ spec:
   - name: endpoint-path
     type: string
   steps:
-  - env:
+  - name: wait-till-deployment
+    image: quay.io/openshift/origin-cli:latest
+    env:
+      - name: RELEASE_NAME
+        value: $(params.release-name)
+    script: |
+      set -e
+
+      SLEEP_TIME_SEC=10
+      RETRIES=20
+
+      wait_until() {
+        condition=$1
+        message=$2
+
+        retries=$RETRIES
+        until $condition || [[ "$retries" -eq 0 ]]; do
+          retries=$((retries - 1))
+
+          sleep $SLEEP_TIME_SEC
+        done
+
+        if [[ "$retries" -eq 0 ]]; then
+          echo $message
+          exit 1
+        fi
+      }
+
+      resolve_deployment() {
+        deployment=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null) 
+      }
+
+      replicas_are_updated() {
+        local replicas=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].status.replicas}')
+        test $replicas -eq 1
+      }
+
+      desired_replicas_same_as_actual_replicas() {
+        local desired_replicas=$1
+
+        test $desired_replicas -eq $(oc get pods --no-headers -l app.kubernetes.io/instance=$RELEASE_NAME | wc -l)
+      }
+
+      wait_until resolve_deployment "Could not find deployment"
+      oc rollout status deployment $deployment
+
+      desired_replicas=$(oc get deploy -l app.kubernetes.io/instance=$RELEASE_NAME -o jsonpath='{$.items[0].spec.replicas}')
+      wait_until "desired_replicas_same_as_actual_replicas $desired_replicas" "Numner of pods does not match desired replicas"
+  - name: resolve-route
+    env:
     - name: BASIC_AUTH_USERNAME
       valueFrom:
         secretKeyRef:
@@ -36,8 +81,6 @@ spec:
           key: password
           name: basic-auth-rest
     image: quay.io/openshift/origin-cli:latest
-    name: resolve-route
-    resources: {}
     script: |
       #!/bin/bash
 
@@ -84,7 +127,8 @@ spec:
     - mountPath: /client-certs
       name: certs
       readOnly: true
-  - env:
+  - name: run-test
+    env:
     - name: BASIC_AUTH_USERNAME
       valueFrom:
         secretKeyRef:
@@ -97,8 +141,6 @@ spec:
           name: basic-auth-rest
     image: image-registry.openshift-image-registry.svc:5000/ace/newman
     imagePullPolicy: Always
-    name: run-test
-    resources: {}
     script: |
       #!/bin/bash
 
