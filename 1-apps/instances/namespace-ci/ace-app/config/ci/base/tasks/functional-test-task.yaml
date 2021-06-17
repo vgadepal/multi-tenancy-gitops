@@ -64,6 +64,8 @@ spec:
         test $desired_replicas -eq $(oc -n $(params.source-env) get pods --no-headers -l app.kubernetes.io/instance=$RELEASE_NAME | wc -l)
       }
 
+      oc -n $(params.source-env) get deploy
+      
       wait_until resolve_deployment "Could not find deployment"
       oc -n $(params.source-env) rollout status deployment $deployment
 
