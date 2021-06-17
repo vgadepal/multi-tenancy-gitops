@@ -8,9 +8,9 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: pipeline
       containers:
       - name: functional-test
-        serviceAccountName: pipeline
         image: quay.io/rhcanada/tkn-cli
         command: 
           - tkn
