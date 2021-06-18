@@ -21,7 +21,7 @@ rules:
       - daemonsets
       - deployments
       - replicasets
-      - statefulsets            
+      - statefulsets
   - verbs:
       - '*'
     apiGroups:
