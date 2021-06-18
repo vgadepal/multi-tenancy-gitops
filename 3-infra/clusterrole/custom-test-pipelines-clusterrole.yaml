@@ -13,3 +13,12 @@ rules:
       - tasks
       - taskruns
       - pipelineresources
+  - verbs:
+      - '*'
+    apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets            
