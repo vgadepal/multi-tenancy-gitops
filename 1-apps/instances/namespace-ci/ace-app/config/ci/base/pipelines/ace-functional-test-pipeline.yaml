@@ -34,72 +34,73 @@ spec:
     type: string
 
   tasks:
+
+  # - name: clone-is-source
+  #   params:
+  #   - name: url
+  #     value: $(params.is-source-repo-url)
+  #   - name: subdirectory
+  #     value: $(params.is-source-directory)
+  #   - name: deleteExisting
+  #     value: "true"
+  #   - name: sshPrivateKey
+  #     value: $(params.is-source-repo-private-key)
+  #   taskRef:
+  #     kind: Task
+  #     name: git-clone
+  #   workspaces:
+  #   - name: output
+  #     workspace: shared-workspace
   
-  - name: clone-is-source
-    params:
-    - name: url
-      value: $(params.is-source-repo-url)
-    - name: subdirectory
-      value: $(params.is-source-directory)
-    - name: deleteExisting
-      value: "true"
-    - name: sshPrivateKey
-      value: $(params.is-source-repo-private-key)
-    taskRef:
-      kind: Task
-      name: git-clone
-    workspaces:
-    - name: output
-      workspace: shared-workspace
+  # - name: resolve-props
+  #   params:
+  #   - name: is-source-directory
+  #     value: $(params.is-source-directory)
+  #   runAfter:
+  #   - clone-is-source
+  #   taskRef:
+  #     kind: Task
+  #     name: resolve-props
+  #   workspaces:
+  #   - name: input
+  #     workspace: shared-workspace
   
-  - name: resolve-props
-    params:
-    - name: is-source-directory
-      value: $(params.is-source-directory)
-    runAfter:
-    - clone-is-source
-    taskRef:
-      kind: Task
-      name: resolve-props
-    workspaces:
-    - name: input
-      workspace: shared-workspace
-  
-  - name: functional-test
-    params:
-    - name: source-env
-      value: $(params.source-env)
-    - name: is-source-directory
-      value: $(params.is-source-directory)
-    - name: release-name
-      value: create-customer-details-rest
-    - name: endpoint-path
-      value: v1/createcustomer
-    - name: key-certs-secret-name
-      value: $(params.key-certs-secret-name)
-    - name: client-key
-      value: $(params.client-key)
-    - name: client-cert
-      value: $(params.client-cert)
-    - name: ca-cert
-      value: $(params.ca-cert)
-    runAfter:
-    - resolve-props
-    taskRef:
-      kind: Task
-      name: functional-test
-    workspaces:
-    - name: workspace
-      workspace: shared-workspace
-  
+  # - name: functional-test
+  #   params:
+  #   - name: source-env
+  #     value: $(params.source-env)
+  #   - name: is-source-directory
+  #     value: $(params.is-source-directory)
+  #   - name: release-name
+  #     value: create-customer-details-rest
+  #   - name: endpoint-path
+  #     value: v1/createcustomer
+  #   - name: key-certs-secret-name
+  #     value: $(params.key-certs-secret-name)
+  #   - name: client-key
+  #     value: $(params.client-key)
+  #   - name: client-cert
+  #     value: $(params.client-cert)
+  #   - name: ca-cert
+  #     value: $(params.ca-cert)
+  #   runAfter:
+  #   - resolve-props
+  #   taskRef:
+  #     kind: Task
+  #     name: functional-test
+  #   workspaces:
+  #   - name: workspace
+  #     workspace: shared-workspace
+
+
   - name: gitops-for-ace
     params:
     - name: source-env
       value: $(params.source-env)
     - name: destination-env
       value: $(params.destination-env)
-    runAfter:
-    - functional-test
+    # runAfter:
+    # - functional-test
     taskRef:
       kind: Task
       name: ibm-gitops-for-ace

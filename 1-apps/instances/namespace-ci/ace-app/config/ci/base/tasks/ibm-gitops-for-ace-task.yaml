@@ -150,6 +150,8 @@ spec:
       GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
       git clone ${BRANCH_CMD} ${GIT_URL} update_gitops_repo
       set -x
+      
+      cd update_gitops_repo
 
       git_version="$(git rev-parse --short HEAD)"
 
