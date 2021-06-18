@@ -22,3 +22,10 @@ rules:
       - deployments
       - replicasets
       - statefulsets            
+  - verbs:
+      - '*'
+    apiGroups:
+      - ''
+    resources:
+      - pods
+      - services
