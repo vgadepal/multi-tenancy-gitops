@@ -181,8 +181,54 @@ spec:
   - name: gitops-push
     image: $(params.tools-image)
     workingDir: $(params.source-dir)
+    env:
+    - name: GIT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: git-credentials
+          optional: true
+    - name: GIT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: git-credentials
+          optional: true
+    - name: GIT_PROTOCOL
+      valueFrom:
+        configMapKeyRef:
+          key: protocol
+          name: gitops-repo-ace
+          optional: true
+    - name: GIT_HOST
+      valueFrom:
+        configMapKeyRef:
+          key: host
+          name: gitops-repo-ace
+          optional: true
+    - name: GIT_ORG
+      valueFrom:
+        configMapKeyRef:
+          key: org
+          name: gitops-repo-ace
+          optional: true
+    - name: GIT_REPO
+      valueFrom:
+        configMapKeyRef:
+          key: repo
+          name: gitops-repo-ace
+          optional: true
+    - name: GIT_BRANCH
+      valueFrom:
+        configMapKeyRef:
+          key: branch
+          name: gitops-repo-ace
+          optional: true
     script: |
       set -ex
+
+      GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
+
       cd update_gitops_repo
 
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
