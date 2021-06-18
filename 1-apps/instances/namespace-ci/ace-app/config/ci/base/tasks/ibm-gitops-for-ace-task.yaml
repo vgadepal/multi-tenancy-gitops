@@ -153,10 +153,11 @@ spec:
     workingDir: $(params.source-dir)
   - name: copy-to-staging
     image: $(params.tools-image)
-    workingDir: $(params.source-dir)/update_gitops_repo
+    workingDir: $(params.source-dir)
     script: |
       set -x
 
+      cd update_gitops_repo
       source_directory_integration_server="$(params.app-path)/namespace-$(params.source-env)/$(params.ace-path)/$(params.source-env)/$(params.base-path)/$(params.integrationServer-path)"
       destination_directory_integration_server="$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/$(params.integrationServer-path)"
 
