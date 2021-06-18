@@ -59,7 +59,8 @@ spec:
     - mountPath: $(params.source-dir)
       name: source
   steps:
-  - env:
+  - name: gitops-clone
+    env:
     - name: NAMESPACE
       valueFrom:
         fieldRef:
@@ -127,7 +128,7 @@ spec:
           name: gitops-repo-ace
           optional: true
     image: $(params.tools-image)
-    name: gitops-with-pr
+    
     resources: {}
     script: |
       #!/usr/bin/env bash
@@ -149,7 +150,6 @@ spec:
       GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
       git clone ${BRANCH_CMD} ${GIT_URL} update_gitops_repo
       set -x
-      cd update_gitops_repo
 
       git_version="$(git rev-parse --short HEAD)"
 
@@ -175,6 +175,13 @@ spec:
 
       cp -r ${source_directory_config}/. ${destination_directory_config}
 
+    workingDir: $(params.source-dir)
+  - name: gitops-push
+    image: $(params.tools-image)
+    workingDir: $(params.source-dir)
+    script: |
+      cd update_gitops_repo
+
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
         echo "No changes"
         exit 0
@@ -190,7 +197,7 @@ spec:
 
       GIT_PUSH_URL="${GIT_PROTOCOL}://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/pulls"
       curl -u ${GIT_USERNAME}:${GIT_PASSWORD} -d '{"title":"PR to promote to $(params.destination-env) environment","base":"'${GIT_BRANCH}'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${git_version}'"}' ${GIT_PUSH_URL}
-    workingDir: $(params.source-dir)
+  
   volumes:
   - emptyDir: {}
     name: source
