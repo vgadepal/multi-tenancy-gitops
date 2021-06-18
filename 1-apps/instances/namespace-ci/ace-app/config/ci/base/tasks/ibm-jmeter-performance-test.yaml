@@ -60,8 +60,19 @@ spec:
       image: image-registry.openshift-image-registry.svc:5000/tools/jmeter-11
       script: |
         #!/usr/bin/env bash
+
         set -xv
-        ls $(params.source-dir)/$(params.test-plan)
+
+        ${JMETER_BIN}/jmeter.sh \
+          -Djavax.net.ssl.keyStoreType=jks \
+          -Djavax.net.ssl.keyStore=/client-certs/ibm-client.jks \
+          -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} \
+          -n -t  $(params.source-dir)/$(params.test-plan) \
+          -l /tmp/report.jtl
+
+
+        cat /tmp/report.jtl
+        
         # # note: the export does not like the - sign
         # echo "export jmeter_users=$(echo $(params.jmeter-users))" > /tmp/jmeter.env
         # echo "export jmeter_loop_count=$(echo $(params.jmeter-loop-count))" >> /tmp/jmeter.env
