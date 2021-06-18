@@ -182,6 +182,7 @@ spec:
     image: $(params.tools-image)
     workingDir: $(params.source-dir)
     script: |
+      set -ex
       cd update_gitops_repo
 
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
