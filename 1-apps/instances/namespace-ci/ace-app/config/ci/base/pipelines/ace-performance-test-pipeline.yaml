@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ace-performance-test
+  annotations:
+    app.openshift.io/runtime: test
+spec:
+  params:
+    - name: git-url
+      description: The url for the queuemanager git repository
+    - name: git-revision
+      description: The git revision (branch, tag, or sha) that should be built
+      default: master
+  tasks:
+    - name: setup
+      taskRef:
+        name: ibm-setup
+      params:
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-revision
+          value: $(params.git-revision)
+    - name: performance-testing
+      taskRef:
+        name: ibm-jmeter-performance-test
+      runAfter:
+        - setup
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        
