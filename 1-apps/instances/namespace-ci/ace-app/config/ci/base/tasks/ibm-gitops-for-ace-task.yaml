@@ -189,7 +189,9 @@ spec:
         exit 0
       fi
 
-      # push changes to git
+      git config --global user.email "gitops@cloudnativetoolkit.dev"
+      git config --global user.name "Cloud Native Toolkit Pipeline"
+
       git add .
       git commit -m "Cloudnative toolkit commit" --amend --no-edit --signoff
       git remote rm origin
@@ -199,7 +201,7 @@ spec:
 
       GIT_PUSH_URL="${GIT_PROTOCOL}://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/pulls"
       curl -u ${GIT_USERNAME}:${GIT_PASSWORD} -d '{"title":"PR to promote to $(params.destination-env) environment","base":"'${GIT_BRANCH}'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${git_version}'"}' ${GIT_PUSH_URL}
-  
+
   volumes:
   - emptyDir: {}
     name: source
