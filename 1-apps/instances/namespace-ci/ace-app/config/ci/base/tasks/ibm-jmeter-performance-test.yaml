@@ -57,7 +57,7 @@ spec:
         cd $(params.source-dir)
         git checkout $(params.git-revision)
     - name: jmeter-it
-      image: image-registry.openshift-image-registry.svc:5000/tools/jmeter
+      image: image-registry.openshift-image-registry.svc:5000/tools/jmeter-11
       script: |
         #!/usr/bin/env bash
         set -xv
