@@ -9,3 +9,12 @@ rules:
       - 'bitnami.com'
     resources:
       - sealedsecrets
+  - verbs:
+      - '*'
+    apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets      
