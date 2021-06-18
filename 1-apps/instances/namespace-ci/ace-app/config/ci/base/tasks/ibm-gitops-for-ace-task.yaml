@@ -177,6 +177,7 @@ spec:
 
     workingDir: $(params.source-dir)
   - name: gitops-push
+    image: $(params.tools-image)
     workingDir: $(params.source-dir)
     script: |
       cd update_gitops_repo
