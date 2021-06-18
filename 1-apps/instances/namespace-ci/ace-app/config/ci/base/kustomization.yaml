@@ -4,7 +4,7 @@ resources:
 - pipelines/eaglebank-ace-bar-pipeline.yaml
 - pipelines/eaglebank-ace-config-pipeline.yaml
 - pipelines/ace-functional-test-pipeline.yaml
-# - pipelines/ace-performance-test-pipeline.yaml
+- pipelines/ace-performance-test-pipeline.yaml
 #- pipelines/ibm-test-pipeline-for-dev.yaml
 #- pipelines/ibm-test-pipeline-for-staging.yaml
 - tasks/0-setup.yaml
@@ -22,7 +22,7 @@ resources:
 - tasks/eaglebank-ace-tasks.yaml
 - tasks/functional-test-task.yaml
 - tasks/ibm-gitops-for-ace-task.yaml
-# - tasks/ibm-jmeter-performance-test.yaml
+- tasks/ibm-jmeter-performance-test.yaml
 - bindings/cntk-binding.yaml
 - templates/cntk-ace-template.yaml
 - eventlisteners/cntk-event-listener.yaml
