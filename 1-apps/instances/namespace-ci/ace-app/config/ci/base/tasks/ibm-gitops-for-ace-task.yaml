@@ -149,9 +149,13 @@ spec:
       # clone repo
       GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
       git clone ${BRANCH_CMD} ${GIT_URL} update_gitops_repo
+
+    workingDir: $(params.source-dir)
+  - name: copy-to-staging
+    image: $(params.tools-image)
+    workingDir: $(params.source-dir)/update_gitops_repo
+    script: |
       set -x
-      
-      cd update_gitops_repo
 
       source_directory_integration_server="$(params.app-path)/namespace-$(params.source-env)/$(params.ace-path)/$(params.source-env)/$(params.base-path)/$(params.integrationServer-path)"
       destination_directory_integration_server="$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/$(params.integrationServer-path)"
@@ -172,8 +176,6 @@ spec:
       fi
 
       cp -r ${source_directory_config}/. ${destination_directory_config}
-
-    workingDir: $(params.source-dir)
   - name: gitops-push
     image: $(params.tools-image)
     workingDir: $(params.source-dir)
