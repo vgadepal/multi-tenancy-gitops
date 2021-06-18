@@ -227,11 +227,11 @@ spec:
     script: |
       set -ex
 
-      git_version="$(git rev-parse --short HEAD)"
-
       GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
 
       cd update_gitops_repo
+
+      git_version="$(git rev-parse --short HEAD)"
 
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
         echo "No changes"
