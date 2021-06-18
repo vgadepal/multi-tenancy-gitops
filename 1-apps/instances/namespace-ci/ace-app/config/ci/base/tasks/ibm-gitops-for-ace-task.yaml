@@ -153,15 +153,11 @@ spec:
       
       cd update_gitops_repo
 
-      git_version="$(git rev-parse --short HEAD)"
-
       source_directory_integration_server="$(params.app-path)/namespace-$(params.source-env)/$(params.ace-path)/$(params.source-env)/$(params.base-path)/$(params.integrationServer-path)"
       destination_directory_integration_server="$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/$(params.integrationServer-path)"
 
       source_directory_config="$(params.app-path)/namespace-$(params.source-env)/$(params.ace-path)/$(params.source-env)/$(params.base-path)/$(params.config-path)"
       destination_directory_config="$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/$(params.config-path)"
-
-      git checkout -b cntk-ci-pipeline-${git_version}
 
       if [ "$(ls -A ${destination_directory_integration_server}/*.yaml)" ]; then
         shopt -s extglob
@@ -232,6 +228,7 @@ spec:
       cd update_gitops_repo
 
       git_version="$(git rev-parse --short HEAD)"
+      git checkout -b cntk-ci-pipeline-${git_version}
 
       if [[ $(git status -s | wc -l) -eq 0 ]]; then
         echo "No changes"
