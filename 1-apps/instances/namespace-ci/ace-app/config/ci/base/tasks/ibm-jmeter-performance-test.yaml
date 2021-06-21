@@ -11,52 +11,22 @@ metadata:
     version: 0.0.0
 spec:
   params:
-    - name: git-url
-    - name: git-revision
-      default: master
-    - name: source-dir
-      default: /source
+    - name: is-source-directory
+      type: string
+    - default: ibm-client.jks
+      name: key-certs-secret-name
+      type: string
     - name: test-plan
       default: jmeter_test_plan/createCustomer_ace_testplan.jmx
-    - name: jmeter-users
-      default: "5"
-    - name: jmeter-loop-count
-      default: "25"
-  volumes:
-    - name: source
-      emptyDir: {}
-  stepTemplate:
-    volumeMounts:
-      - name: source
-        mountPath: $(params.source-dir)
   steps:
-    - name: git-clone
-      image: quay.io/ibmgaragecloud/alpine-git
-      env:
-        - name: GIT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: git-credentials
-              key: password
-              optional: true
-        - name: GIT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: git-credentials
-              key: username
-              optional: true
-      script: |
-        set +x
-        if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
-            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
-        else
-            set -x
-            git clone $(params.git-url) $(params.source-dir)
-        fi
-        set -x
-        cd $(params.source-dir)
-        git checkout $(params.git-revision)
     - name: jmeter-it
+      env:
+      - name: KEYSTORE_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: keyStorePassword
+            name: ibm-client.jks
+            optional: true
       image: image-registry.openshift-image-registry.svc:5000/tools/jmeter-11
       script: |
         #!/usr/bin/env bash
@@ -67,27 +37,38 @@ spec:
           -Djavax.net.ssl.keyStoreType=jks \
           -Djavax.net.ssl.keyStore=/client-certs/ibm-client.jks \
           -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} \
-          -n -t  $(params.source-dir)/$(params.test-plan) \
+          -n -t $(workspaces.workspace.path)/$(params.is-source-directory)/$(params.test-plan) \
           -l /tmp/report.jtl
 
-
         cat /tmp/report.jtl
-        
-        # # note: the export does not like the - sign
-        # echo "export jmeter_users=$(echo $(params.jmeter-users))" > /tmp/jmeter.env
-        # echo "export jmeter_loop_count=$(echo $(params.jmeter-loop-count))" >> /tmp/jmeter.env
-        # source /tmp/jmeter.env
-        # ls -lrt /opt/jmeter
-        # /opt/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -t $(params.source-dir)/$(params.test-plan) -Jjmeter_users=$jmeter_users -Jjmeter_loop_count=$jmeter_loop_count -l /tmp/report.jtl
-        # echo "checking for the existance of errors .."
-        #
-        # LINES=$(grep false /tmp/report.jtl | wc -l)
-        # TOTAL_LINES=$(cat /tmp/report.jtl | wc -l)
-        #
-        # if [ $LINES -eq 0 ] ; then
-        #   echo "no errors in jmeter test -> ready to promote the code"
-        #   exit 0
-        # else
-        #   echo "oops, errors were found."
-        #   exit 1
-        # fi
+
+        echo "checking for the existance of errors .."
+
+        LINES=$(grep false /tmp/report.jtl | wc -l)
+        TOTAL_LINES=$(cat /tmp/report.jtl | wc -l)
+
+        if [ $LINES -eq 0 ] ; then
+          echo "no errors in jmeter test -> ready to promote the code"
+          exit 0
+        else
+          echo "oops, errors were found."
+          exit 1
+        fi
+
+      volumeMounts:
+      - mountPath: /shared
+        name: shared-volume
+      - mountPath: /client-certs
+        name: certs
+        readOnly: true
+  volumes:
+  - emptyDir: {}
+    name: shared-volume
+  - name: certs
+    secret:
+      items:
+        - key: keyStore
+          path: ibm-client.jks
+      secretName: $(params.key-certs-secret-name)
+  workspaces:
+  - name: workspace
