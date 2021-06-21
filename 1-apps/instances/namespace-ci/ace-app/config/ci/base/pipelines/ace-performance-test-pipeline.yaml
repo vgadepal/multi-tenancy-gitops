@@ -24,6 +24,9 @@ spec:
     - description: Points to the staging/prod env
       name: destination-env
       type: string
+    - description: User Load
+      name: jmeter-users
+      type: string
   tasks:
     - name: clone-is-source
       params:
@@ -65,6 +68,8 @@ spec:
           value: $(params.is-source-directory)
         - name: key-certs-secret-name
           value: $(params.key-certs-secret-name)
+        - name: jmeter-users
+          value: $(params.jmeter-users)
       workspaces:
       - name: workspace
         workspace: shared-workspace

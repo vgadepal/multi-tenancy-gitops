@@ -18,6 +18,8 @@ spec:
       type: string
     - name: test-plan
       default: jmeter_test_plan/createCustomer_ace_testplan.jmx
+    - name: jmeter-users
+      default: "5"
   steps:
     - name: jmeter-it
       env:
@@ -33,11 +35,17 @@ spec:
 
         set -xv
 
+        # note: the export does not like the - sign
+        echo "export jmeter_users=$(echo $(params.jmeter-users))" > /tmp/jmeter.env
+
+        source /tmp/jmeter.env
+
         ${JMETER_BIN}/jmeter.sh \
           -Djavax.net.ssl.keyStoreType=jks \
           -Djavax.net.ssl.keyStore=/client-certs/ibm-client.jks \
           -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} \
           -n -t $(workspaces.workspace.path)/$(params.is-source-directory)/$(params.test-plan) \
+          -Jjmeter_users=$jmeter_users \
           -l /tmp/report.jtl
 
         cat /tmp/report.jtl
