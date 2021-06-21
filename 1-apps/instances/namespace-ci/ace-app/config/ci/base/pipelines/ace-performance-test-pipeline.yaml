@@ -32,4 +32,14 @@ spec:
           value: "$(tasks.setup.results.git-revision)"
         - name: source-dir
           value: "$(tasks.setup.results.source-dir)"
-        
+    - name: gitops-for-ace
+      params:
+      - name: source-env
+        value: $(params.source-env)
+      - name: destination-env
+        value: $(params.destination-env)
+      runAfter:
+      - functional-test
+      taskRef:
+        kind: Task
+        name: ibm-gitops-for-ace
