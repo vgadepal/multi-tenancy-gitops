@@ -128,7 +128,7 @@ spec:
           name: gitops-repo-ace
           optional: true
     image: $(params.tools-image)
-    
+
     resources: {}
     script: |
       #!/usr/bin/env bash
@@ -151,7 +151,7 @@ spec:
       git clone ${BRANCH_CMD} ${GIT_URL} update_gitops_repo
 
     workingDir: $(params.source-dir)
-  - name: copy-to-staging
+  - name: copy-to-next-env
     image: $(params.tools-image)
     workingDir: $(params.source-dir)
     script: |
@@ -165,14 +165,12 @@ spec:
       destination_directory_config="$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/$(params.config-path)"
 
       if [ "$(ls -A ${destination_directory_integration_server}/*.yaml)" ]; then
-        shopt -s extglob
         rm ${destination_directory_integration_server}/*.yaml
       fi
 
       cp -r ${source_directory_integration_server}/. ${destination_directory_integration_server}
 
       if [ "$(ls -A ${destination_directory_config}/*.yaml)" ]; then
-        shopt -s extglob
         rm ${destination_directory_config}/*.yaml
       fi
 
