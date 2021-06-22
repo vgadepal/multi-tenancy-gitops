@@ -16,7 +16,7 @@ spec:
         params:
 
           - name: is-source-repo-url
-            value: $(tt.params.source-git-url)
+            value: git@github.ibm.com:cpat-int-samples/createCustomer_REST_V1.git
           - name: is-source-repo-private-key
             value: id_create-customer-rest-v1
 
