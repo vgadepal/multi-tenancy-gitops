@@ -8,7 +8,7 @@ spec:
     accept: true
     license: L-APEH-BPUCJK
     use: CloudPakForIntegrationNonProduction
-  replicas: 1
+  replicas: 2
   router:
     timeout: 120s
   service:
@@ -19,7 +19,7 @@ spec:
   pod:
     containers:
       runtime:
-        image: image-registry.openshift-image-registry.svc:5000/ci/create-customer-details-rest:6e0fc1e0eba89820dca806e34fd1052a4dda8721
+        image: image-registry.openshift-image-registry.svc:5000/ci/create-customer-details-rest:7845e44b21d544054244005aff75203917d6e966
         imagePullPolicy: Always
   configurations:
     - ibm-rest-dbparms.txt
