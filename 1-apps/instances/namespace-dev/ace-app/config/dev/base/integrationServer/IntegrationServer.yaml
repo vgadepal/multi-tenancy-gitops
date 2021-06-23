@@ -8,7 +8,7 @@ spec:
     accept: true
     license: L-APEH-BPUCJK
     use: CloudPakForIntegrationNonProduction
-  replicas: 4
+  replicas: 2
   router:
     timeout: 120s
   service:
