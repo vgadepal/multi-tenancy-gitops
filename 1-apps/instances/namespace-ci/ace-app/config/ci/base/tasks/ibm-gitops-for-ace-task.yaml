@@ -168,13 +168,10 @@ spec:
           value: $(params.base-path)
       args:
         - "$(params.integrationServer-path) $(params.config-path)"
-        - update_gitops_repo/$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/kustomization.yaml
         - $(params.source-dir)/kustomization_items.txt
       script: |-
         #!/bin/bash
-
         set -ex
-
         function copy_for_promotion() {
           local src_folder=$1
           local dst_folder=$2
@@ -195,60 +192,74 @@ spec:
           KUSTOMIZATION_PARENT_DIRECTORY=$(dirname ${kustomization_file_path})
 
           for item in $(ls ${dst_folder}/*.yaml); do
-            realpath $item --relative-to ${KUSTOMIZATION_PARENT_DIRECTORY} >> ${item_list_path}
+            realpath $item --relative-to ${KUSTOMIZATION_PARENT_DIRECTORY} \
+              >> ${item_list_path}
           done
         }
 
 
         function copy_for_promotion_set() {
           local paths_to_copy=$1
-          local kustomization_file_path=$2
-          local item_list_path=$3
+          local item_list_path=$2
 
-          local src_folder="${APP_PATH}/namespace-${SRC_ENV}/${ACE_PATH}/${SRC_ENV}/${BASE_PATH}"
-          local dst_folder="${APP_PATH}/namespace-${DST_ENV}/${ACE_PATH}/${DST_ENV}/${BASE_PATH}"
+          local env_pfx="${APP_PATH}/namespace"
+          local src_folder="${env_pfx}-${SRC_ENV}/${ACE_PATH}/${SRC_ENV}/${BASE_PATH}"
+          local dst_folder="${env_pfx}-${DST_ENV}/${ACE_PATH}/${DST_ENV}/${BASE_PATH}"
+          local kustomization_file_path=${dst_folder}/kustomization.yaml
 
           for path in ${paths_to_copy[*]}; do
             copy_for_promotion ${src_folder}/$path ${dst_folder}/$path
-            generate_list_for_kustomization ${dst_folder}/$path $kustomization_file_path $item_list_path
+            generate_list_for_kustomization ${dst_folder}/$path \
+              $kustomization_file_path $item_list_path
           done
 
         }
 
-
         if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
           paths_to_copy=$1
-          kustomization_file_path=$2
-          item_list_path=$3
+          item_list_path=$2
 
-          copy_for_promotion_set "$paths_to_copy" $kustomization_file_path $item_list_path
+          copy_for_promotion_set "$paths_to_copy" $item_list_path
 
         fi
     - name: update-kustomization
       image: image-registry.openshift-image-registry.svc:5000/ace/yq-zip
       args:
         - $(params.source-dir)/kustomization_items.txt
-        - update_gitops_repo/$(params.app-path)/namespace-$(params.destination-env)/$(params.ace-path)/$(params.destination-env)/$(params.base-path)/kustomization.yaml
       workingDir: $(params.source-dir)
+      env:
+        - name: APP_PATH
+          value: update_gitops_repo/$(params.app-path)
+        - name: DST_ENV
+          value: $(params.destination-env)
+        - name: ACE_PATH
+          value: $(params.ace-path)
+        - name: BASE_PATH
+          value: $(params.base-path)
       script: |-
         #!/bin/bash
 
+        set -ex
+
         function update_kustomization_from_file() {
           item_list_file_path=$1
-          kustomization_file_path=$2
 
           items=$(cat $item_list_file_path)
 
           for item in ${items[*]}; do
-            update_kustomization $item $kustomization_file_path
+            update_kustomization $item
           done
         }
 
         function update_kustomization() {
-          item=$1
-          kustomization_file_path=$2
+          local item=$1
 
-          contains=$(config=$item yq e '.resources[] | select(. == env(config))' $kustomization_file_path)
+          local env_dir=${APP_PATH}/namespace-${DST_ENV}
+          local base_dir=${env_dir}/ace-app/config/${DST_ENV}/base
+          local kustomization_file_path=${base_dir}/kustomization.yaml
+
+          local contains=$(config=$item yq e '.resources[] | select(. == env(config))' \
+             $kustomization_file_path)
 
           if [[ -z $contains ]]; then
             config=$item yq e -i '.resources = (.resources // []) + env(config)' \
@@ -259,7 +270,7 @@ spec:
         }
 
         function prettyfy() {
-          file=$1
+          local file=$1
 
           yq e --prettyPrint $file >/tmp/temp.yaml
           mv /tmp/temp.yaml $file
@@ -267,10 +278,8 @@ spec:
 
         if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
           item_list_file_path=$1
-          kustomization_file_path=$2
 
-          update_kustomization_from_file $item_list_file_path $kustomization_file_path
-
+          update_kustomization_from_file $item_list_file_path
         fi
     - name: gitops-push
       image: $(params.tools-image)

@@ -1,2 +1,7 @@
-resources: 
-- configuration/ibm_rest_serverconf_yaml.yaml
+resources:
+  - integrationServer/IntegrationServer.yaml
+  - configuration/ibm_ace_server_jks.yaml
+  - configuration/ibm_ca_jks.yaml
+  - configuration/ibm_rest_dbparms_txt.yaml
+  - configuration/ibm_rest_policy.yaml
+  - configuration/ibm_rest_serverconf_yaml.yaml

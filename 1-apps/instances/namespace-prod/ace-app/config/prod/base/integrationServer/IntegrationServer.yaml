@@ -19,7 +19,7 @@ spec:
   pod:
     containers:
       runtime:
-        image: image-registry.openshift-image-registry.svc:5000/ci/create-customer-details-rest:f8e93760e26711283b20dba6a0f09ed540ff13a3
+        image: image-registry.openshift-image-registry.svc:5000/ci/create-customer-details-rest:7845e44b21d544054244005aff75203917d6e966
         imagePullPolicy: Always
   configurations:
     - ibm-rest-dbparms.txt
