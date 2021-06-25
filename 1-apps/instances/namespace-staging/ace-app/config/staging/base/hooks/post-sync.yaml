@@ -29,7 +29,7 @@ spec:
           - --param
           - destination-env=prod
           - --param
-          - jmeter-users=650
+          - jmeter-users=600
           - --workspace
           - name=shared-workspace,claimName=ace-test-pvc
           - --serviceaccount
