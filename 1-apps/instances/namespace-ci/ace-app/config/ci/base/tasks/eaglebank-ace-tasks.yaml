@@ -405,6 +405,8 @@ items:
 
         resolve_props '.integrationServer.applicationNames' $(results.is-application-names.path)
         resolve_prop '.integrationServer.releaseName' $(results.release-name.path)
+        resolve_prop '.integrationServer.endpoint-path' $(results.endpoint-path.path)
+
         
         resolve_props '.integrationServer.configurations.keystore' $(results.is-configuration-keystore.path)
         resolve_props '.integrationServer.configurations.truststore' $(results.is-configuration-truststore.path)
