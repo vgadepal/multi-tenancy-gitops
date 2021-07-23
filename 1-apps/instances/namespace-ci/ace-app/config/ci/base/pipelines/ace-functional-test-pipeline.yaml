@@ -72,7 +72,7 @@ spec:
     - name: is-source-directory
       value: $(params.is-source-directory)
     - name: release-name
-      value: $(tasks.resolve-props.results.releaseName)
+      value: $(tasks.resolve-props.results.release-name)
     - name: endpoint-path
       value: $(tasks.resolve-props.results.endpoint-path)
     - name: key-certs-secret-name
