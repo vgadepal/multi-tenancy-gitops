@@ -72,9 +72,9 @@ spec:
     - name: is-source-directory
       value: $(params.is-source-directory)
     - name: release-name
-      value: create-customer-details-rest
+      value: $(tasks.resolve-props.results.releaseName)
     - name: endpoint-path
-      value: v1/createcustomer
+      value: $(tasks.resolve-props.results.endpoint-path)
     - name: key-certs-secret-name
       value: $(params.key-certs-secret-name)
     - name: client-key
