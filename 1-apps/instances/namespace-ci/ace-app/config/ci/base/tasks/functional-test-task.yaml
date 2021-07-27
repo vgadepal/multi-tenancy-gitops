@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   annotations:
-  name: functional-test
+    name: functional-test
 spec:
   params:
   - name: release-name
